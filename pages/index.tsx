@@ -1,13 +1,40 @@
-import Link from 'next/link'
-import Layout from '../components/Layout'
+import React from 'react';
+import Layout from '../components/Layout';
+import CountriesList from './CountriesList';
 
-const IndexPage = () => (
-  <Layout title="Home | Next.js + TypeScript Example">
-    <h1>Hello Next.js 👋</h1>
-    <p>
-      <Link href="/about">About</Link>
-    </p>
-  </Layout>
-)
+interface IndexPageProps {
+  countries: any[];
+}
 
-export default IndexPage
+const IndexPage: React.FC<IndexPageProps> = ({ countries }) => {
+
+  return (
+    <Layout>
+      <CountriesList countries={countries} />
+    </Layout>
+  );
+};
+
+export async function getStaticProps() {
+  try {
+    const response = await fetch('https://restcountries.com/v3.1/all');
+    const data = await response.json();
+
+    console.log('Fetched countries data:', data);
+    
+    return {
+      props: {
+        countries: data,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching countries data:', error);
+    return {
+      props: {
+        countries: [],
+      },
+    };
+  }
+}
+
+export default IndexPage;
